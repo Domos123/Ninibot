@@ -1,0 +1,36 @@
+{
+  "name": "ninibot",
+  "version": "1.0.0",
+  "description": "A lightweight discord bot for a private server written for discord.js",
+  "main": "bot.js",
+  "dependencies": {
+    "discord.js": "^11.1.0",
+    "erlpack": "^0.1.0",
+    "log4js": "^2.3.3",
+    "node-opus": "^0.2.6",
+    "uws": "^8.14.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Domos123/Ninibot.git"
+  },
+  "keywords": [
+    "discord",
+    "discordjs",
+    "bot",
+    "ninibot"
+  ],
+  "author": {
+         "name": "Dominic Brady",
+         "email": "domos@domos.me.uk"
+      },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Domos123/Ninibot/issues"
+  },
+  "homepage": "https://github.com/Domos123/Ninibot#readme"
+}
