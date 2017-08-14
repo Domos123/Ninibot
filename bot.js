@@ -50,8 +50,6 @@ try {
 //Log in to Discord
 client.login(config.token);
 
-//var toggle = 1;
-
 //Delete old messages
 let cleanup = ( () => {
   let mainchat = client.channels.get(config.mainChannel);
@@ -68,14 +66,14 @@ let cleanup = ( () => {
             for(let i = messageCount - 1; i >= 0; i--) {
               if (Date.now() - messagesArr[i].createdAt < config.cleanupTime) return;
               var tag = "\`\`\`";
-              if (authCheck(messagesArr[i],"")){
+              if (authCheck(messagesArr[i])){
                 tag += "md\n#";
               }
               else if (messagesArr[i].author.bot) {
                 tag += "py\n@";
               }
               tag +=`${messagesArr[i].author.tag} At ${messagesArr[i].createdAt.getUTCHours()}:${messagesArr[i].createdAt.getUTCMinutes()} UTC on ${messagesArr[i].createdAt.getUTCMonth()}\/${messagesArr[i].createdAt.getUTCDay()}\/${messagesArr[i].createdAt.getUTCFullYear()}:\`\`\``;
-              backuproom.send(`${tag}${messagesArr[i].content}`).catch( (err) => logger.error(err));
+              backuproom.send(`${tag}${messagesArr[i].cleanContent}`).catch( (err) => logger.error(err));
               messagesArr[i].delete()
                 .then(() => {
                   count += 1;
@@ -96,12 +94,13 @@ let cleanup = ( () => {
 });
 
 //Authorisation Check for Mod and up
+//TODO: Granular auth system with commands
 let authCheck = ( (message, operation) => {
   //Auth check
   let modrole = message.guild.roles.get(config.modrole);
   let adminrole = message.guild.roles.get(config.adminrole);
   if (!(message.member.roles.has(modrole.id)||message.member.roles.has(adminrole.id))){
-    ///message.channel.send(`Sorry, you do not have permission to ${operation}`);
+    if (operation) message.channel.send(`Sorry, you do not have permission to ${operation}`);
     return false;
   }
   return true;
