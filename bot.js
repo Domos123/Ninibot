@@ -3,7 +3,6 @@ const log4js = require("log4js");
 const fs = require("fs");
 
 const client = new Discord.Client();
-const config = require("./config.json");
 
 log4js.configure({
   appenders: {
@@ -18,6 +17,33 @@ log4js.configure({
 const logger = log4js.getLogger("default");
 
 logger.info("Starting Bot");
+
+let initConfig = ( () => {
+  const initconfig = `\{
+    \"name\": \"ninibot\"\,
+    \"version\": \"1.0.0\"\,
+    \"game\": \"The game the bot will be playing\"\,
+    \"token\": \"put your token here\"\,
+    \"ownerID\": \"ID of whoever will run the bot\",
+    \"prefix\": \"!\"\,
+    \"mainChannel\": \"The channel id to delete things from\"\,
+    \"backupChannel\": \"The channel id to back deleted things up in\"\,
+    \"cleanupTime\": 60000\,
+    \"modrole\": \"The role id of moderators\"\,
+    \"adminrole\": \"The role id of admins\"\,
+    \"topic\": \"No topic set\"\n}`;
+  fs.writeFileSync("./config.json", initconfig, "utf8", (err) => {if (err) logger.error(err);});
+  logger.info("Config was not found or malformed. Set up default config. Please configure then restart");
+  process.exit(1);
+});
+
+var config;
+try {
+  config = require("./config.json");
+} catch (err) {
+  logger.error(err);
+  initConfig();
+}
 
 client.login(config.token);
 
@@ -59,12 +85,12 @@ let cleanup = ( () => {
 //TODO:Fix this
 let authCheck = ( (message, operation) => {
   //Auth check
-  //let modrole = message.guild.roles.find("name", "Moderators");
-  //let adminrole = message.guild.roles.find("name", "Administrators");
-  //if (!(message.member.roles.has(modrole.id)||message.member.roles.has(adminrole.id))){
-  //  message.channel.send(`Sorry, you do not have permission to "${operation}"`);
-  //  return false;
-  //}
+  let modrole = message.guild.roles.get(config.modrole);
+  let adminrole = message.guild.roles.get(config.adminrole);
+  if (!(message.member.roles.has(modrole.id)||message.member.roles.has(adminrole.id))){
+    message.channel.send(`Sorry, you do not have permission to ${operation}`);
+    return false;
+  }
   return true;
 });
 
@@ -104,7 +130,7 @@ client.on("message", (message) => {
   //Set User Nickname (eg. to add pronouns)
   if (command === "nick"){
     let userNick = message.content.slice(message.content.indexOf(" ")+1);
-    logger.info(`Setting nickname for "${message.member.user.username}" to "${userNick}"`);
+    logger.info(`Setting nickname for "${message.member.user.tag}" to "${userNick}"`);
     message.member.setNickname(userNick).then().catch((err) => logger.error(err));
   }
 
@@ -147,8 +173,8 @@ client.on("message", (message) => {
 });
 
 client.on("guildMemberAdd", (member) => {
-  logger.info("New User `${member.user.username}` has joined `${member.guild.name}`" );
-  member.guild.defaultChannel.send(`Welcome "${member.user.username}" to agender chat!`);
+  logger.info(`New User ${member.user.username} has joined ${member.guild.name}` );
+  member.guild.defaultChannel.send(`Welcome ${member.displayName} to ${member.guild.name}!`);
   member.guild.defaultChannel.send("Message a moderator or admin to get permission to talk");
   member.guild.defaultChannel.send(`Messages in this channel are removed after ${config.cleanupTime / 60000} minutes for privacy.`);
 });
