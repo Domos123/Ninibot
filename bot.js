@@ -141,6 +141,10 @@ client.on("message", (message) => {
   //Set User Nickname (eg. to add pronouns)
   if (command === "nick"){
     let userNick = message.content.slice(message.content.indexOf(" ")+1);
+    if (userNick == config.prefix + command){
+      message.channel.send("Expected 1 argument - nickname to set");
+      return;
+    }
     logger.info(`Setting nickname for "${message.member.user.tag}" to "${userNick}"`);
     message.member.setNickname(userNick).then().catch((err) => logger.error(err));
   }
@@ -150,8 +154,12 @@ client.on("message", (message) => {
   //Set Weekly Topic
   if (command === "settopic"){
     if (!authCheck(message, "set the topic")) return;
-
-    config.topic = message.content.slice(message.content.indexOf(" ")+1);
+    let newtopic = message.content.slice(message.content.indexOf(" ")+1);
+    if (newtopic == config.prefix + command){
+      message.channel.send("Expected 1 argument - topic to set");
+      return;
+    }
+    config.topic = newtopic;
     saveConfig();
     message.channel.send(`Set topic to "${config.topic}"`).catch((err) => logger.error(err));
   }
@@ -161,7 +169,8 @@ client.on("message", (message) => {
     if (!authCheck(message, "set the cleanup time")) return;
     let timeout = +message.content.slice(message.content.indexOf(" ")+1);
     if (isNaN(timeout) || timeout > 20000 || timeout < 1 || (timeout % 1 != 0)) {
-      message.channel.send(`Cannot set timeout to "${timeout}"`);
+      message.channel.send(`Cannot set timeout to "${message.content.slice(message.content.indexOf(" ")+1)}"`);
+      return;
     }
     timeout *= 60000;
     config.cleanupTime = timeout;
@@ -175,6 +184,10 @@ client.on("message", (message) => {
   if (command === "setgame"){
     if(message.author.id !== config.ownerID) return;
     let newGame = message.content.slice(message.content.indexOf(" ")+1);
+    if (newGame == config.prefix + command){
+      message.channel.send("Expected 1 argument - game to set");
+      return;
+    }
     logger.info(`Setting game to "${newGame}"`);
     config.game = newGame;
     client.user.setGame(newGame);
