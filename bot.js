@@ -41,9 +41,8 @@ let initConfig = ( () => {
 //Load config, or if we can't, set one up and quit
 var config;
 try {
-  config = require("./config.json");
+  config = JSON.parse(fs.readFileSync("./config.json", "utf8"));
 } catch (err) {
-  logger.error(err);
   initConfig();
 }
 
