@@ -2,6 +2,9 @@ const Discord = require("discord.js");
 const log4js = require("log4js");
 const fs = require("fs");
 
+//No more including version number in config <3
+require("pkginfo")(module);
+
 const client = new Discord.Client();
 //Set up logging
 log4js.configure({
@@ -21,8 +24,6 @@ logger.info("Starting Bot");
 //Config in case none is present
 let initConfig = ( () => {
   const initconfig = `\{
-    \"name\": \"ninibot\"\,
-    \"version\": \"1.0.0\"\,
     \"game\": \"The game the bot will be playing\"\,
     \"token\": \"put your token here\"\,
     \"ownerID\": \"ID of whoever will run the bot\",
@@ -103,7 +104,7 @@ let saveConfig = ( () => {
 
 //When the bot has logged in to Discord
 client.on("ready", () => {
-  logger.info(`Bot Ready - ${config.name} - ${config.version}`);
+  logger.info(`Bot Ready - ${module.exports.name} - ${module.exports.version}`);
   client.user.setGame(config.game);
 
   setInterval(cleanup, 30000);
@@ -121,6 +122,11 @@ client.on("message", (message) => {
   }
 
   let command = message.content.toLowerCase().split(" ")[0].slice(1);
+
+  //Get info about bot
+  if (command === "about"){
+    message.channel.send(`Hi, I'm ${module.exports.name} ${module.exports.version}.\nI was created by ${module.exports.author.name} and can be found at ${module.exports.homepage} or on npm.`);
+  }
 
   //Check privacy time
   if (command === "privacy"){
