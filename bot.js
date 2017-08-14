@@ -3,7 +3,7 @@ const log4js = require("log4js");
 const fs = require("fs");
 
 const client = new Discord.Client();
-
+//Set up logging
 log4js.configure({
   appenders: {
     out: { type: "console" },
@@ -18,6 +18,7 @@ const logger = log4js.getLogger("default");
 
 logger.info("Starting Bot");
 
+//Config in case none is present
 let initConfig = ( () => {
   const initconfig = `\{
     \"name\": \"ninibot\"\,
@@ -37,6 +38,7 @@ let initConfig = ( () => {
   process.exit(1);
 });
 
+//Load config, or if we can't, set one up and quit
 var config;
 try {
   config = require("./config.json");
@@ -45,8 +47,10 @@ try {
   initConfig();
 }
 
+//Log in to Discord
 client.login(config.token);
 
+//Delete old messages
 let cleanup = ( () => {
   let mainchat = client.channels.get(config.mainChannel);
   let backuproom = client.channels.get(config.backupChannel);
@@ -82,7 +86,6 @@ let cleanup = ( () => {
 });
 
 //Authorisation Check for Mod and up
-//TODO:Fix this
 let authCheck = ( (message, operation) => {
   //Auth check
   let modrole = message.guild.roles.get(config.modrole);
@@ -94,10 +97,12 @@ let authCheck = ( (message, operation) => {
   return true;
 });
 
+//Save the config file
 let saveConfig = ( () => {
   fs.writeFile("./config.json", JSON.stringify(config), "utf8", (err) => {if (err) logger.error(err);});
 });
 
+//When the bot has logged in to Discord
 client.on("ready", () => {
   logger.info(`Bot Ready - ${config.name} - ${config.version}`);
   client.user.setGame(config.game);
@@ -105,6 +110,7 @@ client.on("ready", () => {
   setInterval(cleanup, 30000);
 });
 
+//Handle messages
 client.on("message", (message) => {
   if (!message.content.startsWith(config.prefix) || message.author.bot) return;
 
@@ -172,6 +178,7 @@ client.on("message", (message) => {
 
 });
 
+//Welcome new members
 client.on("guildMemberAdd", (member) => {
   logger.info(`New User ${member.user.username} has joined ${member.guild.name}` );
   member.guild.defaultChannel.send(`Welcome ${member.displayName} to ${member.guild.name}!`);
