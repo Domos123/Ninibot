@@ -11,5 +11,4 @@ A lightweight bot for a private discord server written in discord.js
 ### Restricted by Server Role ###
 * settopic - Set the current chat topic
 * setcleanuptime - Set the time after which messages will be deleted
-### Available Only to the Current Bot Owner ###
 * setgame - Set the game the bot will display itself as playing
