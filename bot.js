@@ -23,18 +23,22 @@ logger.info("Starting Bot");
 
 //Config in case none is present
 let initConfig = ( () => {
-  const initconfig = `\{
-    \"game\": \"The game the bot will be playing\"\,
-    \"token\": \"put your token here\"\,
-    \"ownerID\": \"ID of whoever will run the bot\",
-    \"prefix\": \"!\"\,
-    \"mainChannel\": \"The channel id to delete things from\"\,
-    \"backupChannel\": \"The channel id to back deleted things up in\"\,
-    \"cleanupTime\": 60000\,
-    \"modrole\": \"The role id of moderators\"\,
-    \"adminrole\": \"The role id of admins\"\,
-    \"topic\": \"No topic set\"\n}`;
-  fs.writeFileSync("./config.json", initconfig, "utf8", (err) => {if (err) logger.error(err);});
+  config = {
+    game: "The game the bot will be playing",
+    token: "put your token here",
+    ownerID: "ID of whoever will run the bot",
+    prefix: "!",
+    mainChannel: "The channel id to delete things from",
+    backupChannel: "The channel id to back deleted things up in",
+    cleanupTime: 60000,
+    roles: [
+      {id: "admin id here", rank: 0},
+      {id: "second role id here", rank: 1},
+      {id: "third role id here", rank: 2}
+    ],
+    topic: "No topic set"};
+  //Have to syncronous write so we don't quit before we save
+  fs.writeFileSync("./config.json", JSON.stringify(config,null,2), "utf8", (err) => {if (err) logger.error(err);});
   logger.info("Config was not found or malformed. Set up default config. Please configure then restart");
   process.exit(1);
 });
@@ -66,7 +70,7 @@ let cleanup = ( () => {
             for(let i = messageCount - 1; i >= 0; i--) {
               if (Date.now() - messagesArr[i].createdAt < config.cleanupTime) return;
               var tag = "\`\`\`";
-              if (authCheck(messagesArr[i])){
+              if (authCheck(messagesArr[i], 2)){
                 tag += "md\n#";
               }
               else if (messagesArr[i].author.bot) {
@@ -94,12 +98,15 @@ let cleanup = ( () => {
 });
 
 //Authorisation Check for Mod and up
-//TODO: Granular auth system with commands
-let authCheck = ( (message, operation) => {
-  //Auth check
-  let modrole = message.guild.roles.get(config.modrole);
-  let adminrole = message.guild.roles.get(config.adminrole);
-  if (!(message.member.roles.has(modrole.id)||message.member.roles.has(adminrole.id))){
+let authCheck = ( (message, rank, operation) => {
+  let userLevel = 99999;
+  for (var role of config.roles){
+    if (message.member.roles.has(role.id)) {
+      userLevel = role.rank;
+      break;
+    }
+  }
+  if (!(userLevel <= rank)){
     if (operation) message.channel.send(`Sorry, you do not have permission to ${operation}`);
     return false;
   }
@@ -108,7 +115,7 @@ let authCheck = ( (message, operation) => {
 
 //Save the config file
 let saveConfig = ( () => {
-  fs.writeFile("./config.json", JSON.stringify(config), "utf8", (err) => {if (err) logger.error(err);});
+  fs.writeFile("./config.json", JSON.stringify(config,null,2), "utf8", (err) => {if (err) logger.error(err);});
 });
 
 //When the bot has logged in to Discord
@@ -162,7 +169,7 @@ client.on("message", (message) => {
 
   //Set Weekly Topic
   if (command === "settopic"){
-    if (!authCheck(message, "set the topic")) return;
+    if (!authCheck(message, 1, "set the topic")) return;
     let newtopic = message.content.slice(message.content.indexOf(" ")+1);
     if (newtopic == config.prefix + command){
       message.channel.send("Expected 1 argument - topic to set");
@@ -175,7 +182,7 @@ client.on("message", (message) => {
 
   //Set time after which to delete old messages
   if (command === "setcleanuptime"){
-    if (!authCheck(message, "set the cleanup time")) return;
+    if (!authCheck(message, 2, "set the cleanup time")) return;
     let timeout = +message.content.slice(message.content.indexOf(" ")+1);
     if (isNaN(timeout) || timeout > 20000 || timeout < 1 || (timeout % 1 != 0)) {
       message.channel.send(`Cannot set timeout to "${message.content.slice(message.content.indexOf(" ")+1)}"`);
