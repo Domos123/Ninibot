@@ -198,7 +198,7 @@ client.on("message", (message) => {
 
   //Set Bot Game
   if (command === "setgame"){
-    if(message.author.id !== config.ownerID) return;
+    if (!authCheck(message, 0)) return;
     let newGame = message.content.slice(message.content.indexOf(" ")+1);
     if (newGame == config.prefix + command){
       message.channel.send("Expected 1 argument - game to set");
