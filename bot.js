@@ -70,17 +70,9 @@ let cleanup = ( () => {
 
             for(let i = messageCount - 1; i >= 0; i--) {
               if (Date.now() - messagesArr[i].createdAt < config.cleanupTime) return;
-              /**var tag = "\`\`\`";
-              if (authCheck(messagesArr[i], 2)){
-                tag += "md\n#";
-              }
-              else if (messagesArr[i].author.bot) {
-                tag += "py\n@";
-              }
-              tag +=`${messagesArr[i].author.tag} At ${messagesArr[i].createdAt.getUTCHours()}:${messagesArr[i].createdAt.getUTCMinutes()} UTC on ${messagesArr[i].createdAt.getUTCMonth()}\/${messagesArr[i].createdAt.getUTCDay()}\/${messagesArr[i].createdAt.getUTCFullYear()}:\`\`\``;**/
               const embed = new RichEmbed()
-                .addField("",messagesArr[i].cleanContent)
-                .setFooter(`${messagesArr[i].author.tag} @ ${messagesArr[i].createdAt.getUTCHours()}:${messagesArr[i].createdAt.getUTCMinutes()} UTC ${messagesArr[i].createdAt.getUTCMonth()}\/${messagesArr[i].createdAt.getUTCDay()}\/${messagesArr[i].createdAt.getUTCFullYear()}`)
+                .addField("​",messagesArr[i].cleanContent)
+                .setFooter(messagesArr[i].author.tag)
                 .setColor(messagesArr[i].member?messagesArr[i].member.displayHexColor:0xaaaaaa)
                 .setTimestamp(messagesArr[i].createdAt)
                 .setAuthor(messagesArr[i].member?messagesArr[i].member.displayName:messagesArr[i].author.username, messagesArr[i].author.avatarURL);
