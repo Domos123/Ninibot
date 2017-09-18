@@ -66,7 +66,7 @@ let cleanup = ( () => {
 //When the bot has logged in to Discord
 client.on("ready", () => {
   logger.info(`Bot Ready - ${module.exports.name} - ${module.exports.version}`);
-  client.user.setGame(config.game);
+  client.user.setGame(module.exports.version);
 
   setInterval(cleanup, 30000);
 });

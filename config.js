@@ -4,7 +4,6 @@ const saveConfig = require("./saveConfig.js");
 //Config in case none is present
 let initConfig = ( () => {
   config = {
-    game: "The game the bot will be playing",
     token: "put your token here",
     ownerID: "ID of whoever will run the bot",
     prefix: "!",
