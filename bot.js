@@ -2,8 +2,6 @@ const Commando = require("discord.js-commando");
 const RichEmbed = require("discord.js").RichEmbed;
 const path = require("path");
 const config = require("./config.js");
-const saveConfig = require("./saveConfig.js");
-const authCheck = require("./auth.js");
 const logger = require("./logger.js");
 
 //No more including version number in config <3
@@ -12,7 +10,6 @@ require("pkginfo")(module);
 logger.info("Starting Bot");
 
 const client = new Commando.Client({owner: config.ownerID, commandPrefix: config.prefix});
-
 //Set up command categories
 client.registry
   .registerGroups([
@@ -72,65 +69,6 @@ client.on("ready", () => {
   client.user.setGame(config.game);
 
   setInterval(cleanup, 30000);
-});
-
-//Handle messages
-client.on("message", (message) => {
-
-  let command = message.content.toLowerCase().split(" ")[0].slice(1);
-
-  //Get info about bot
-  if (command === "about"){
-    message.channel.send(`Hi, I'm ${module.exports.name} ${module.exports.version}.\nI was created by ${module.exports.author.name} and can be found at ${module.exports.homepage} or on npm.`);
-  }
-
-  //Get Weekly Topic
-  if (command === "topic"){
-    message.channel.send(config.topic).catch((err) => logger.error(err));
-  }
-
-  //Set User Nickname (eg. to add pronouns)
-  if (command === "nick"){
-    let userNick = message.content.slice(message.content.indexOf(" ")+1);
-    if (userNick == config.prefix + command){
-      message.channel.send("Expected 1 argument - nickname to set");
-      return;
-    }
-    logger.info(`Setting nickname for "${message.member.user.tag}" to "${userNick}"`);
-    message.member.setNickname(userNick).then().catch((err) => logger.error(err));
-  }
-
-  //---Priveleged Commands---
-
-  //Set Weekly Topic
-  if (command === "settopic"){
-    if (!authCheck(message, 1, "set the topic")) return;
-    let newtopic = message.content.slice(message.content.indexOf(" ")+1);
-    if (newtopic == config.prefix + command){
-      message.channel.send("Expected 1 argument - topic to set");
-      return;
-    }
-    config.topic = newtopic;
-    saveConfig(config);
-    message.channel.send(`Set topic to "${config.topic}"`).catch((err) => logger.error(err));
-  }
-
-  //---Owner Only Commands---
-
-  //Set Bot Game
-  if (command === "setgame"){
-    if (!authCheck(message, 0)) return;
-    let newGame = message.content.slice(message.content.indexOf(" ")+1);
-    if (newGame == config.prefix + command){
-      message.channel.send("Expected 1 argument - game to set");
-      return;
-    }
-    logger.info(`Setting game to "${newGame}"`);
-    config.game = newGame;
-    client.user.setGame(newGame);
-    saveConfig(config);
-  }
-
 });
 
 //Welcome new members
