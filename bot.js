@@ -1,4 +1,4 @@
-const Discord = require("discord.js");
+const Commando = require("discord.js-commando");
 const RichEmbed = require("discord.js").RichEmbed;
 const log4js = require("log4js");
 const fs = require("fs");
@@ -6,7 +6,6 @@ const fs = require("fs");
 //No more including version number in config <3
 require("pkginfo")(module);
 
-const client = new Discord.Client();
 //Set up logging
 log4js.configure({
   appenders: {
@@ -51,6 +50,8 @@ try {
 } catch (err) {
   initConfig();
 }
+
+const client = new Commando.Client({commandPrefix: config.prefix});
 
 //Log in to Discord
 client.login(config.token);
