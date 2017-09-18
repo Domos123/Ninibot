@@ -1,57 +1,26 @@
 const Commando = require("discord.js-commando");
 const RichEmbed = require("discord.js").RichEmbed;
-const log4js = require("log4js");
-const fs = require("fs");
+const path = require("path");
+const config = require("./config.js");
+const saveConfig = require("./saveConfig.js");
+const authCheck = require("./auth.js");
+const logger = require("./logger.js");
 
 //No more including version number in config <3
 require("pkginfo")(module);
 
-//Set up logging
-log4js.configure({
-  appenders: {
-    out: { type: "console" },
-    app: { type: "file", filename: "logs/info.log"},
-  },
-  categories: {
-    default: { appenders: [ "out", "app" ], level: "trace" }
-  }
-});
-
-const logger = log4js.getLogger("default");
-
 logger.info("Starting Bot");
 
-//Config in case none is present
-let initConfig = ( () => {
-  config = {
-    game: "The game the bot will be playing",
-    token: "put your token here",
-    ownerID: "ID of whoever will run the bot",
-    prefix: "!",
-    mainChannel: "The channel id to delete things from",
-    backupChannel: "The channel id to back deleted things up in",
-    cleanupTime: 60000,
-    roles: [
-      {id: "admin id here", rank: 0},
-      {id: "second role id here", rank: 1},
-      {id: "third role id here", rank: 2}
-    ],
-    topic: "No topic set"};
-  //Have to syncronous write so we don't quit before we save
-  fs.writeFileSync("./config.json", JSON.stringify(config,null,2), "utf8", (err) => {if (err) logger.error(err);});
-  logger.info("Config was not found or malformed. Set up default config. Please configure then restart");
-  process.exit(1);
-});
+const client = new Commando.Client({owner: config.ownerID, commandPrefix: config.prefix});
 
-//Load config, or if we can't, set one up and quit
-var config;
-try {
-  config = JSON.parse(fs.readFileSync("./config.json", "utf8"));
-} catch (err) {
-  initConfig();
-}
-
-const client = new Commando.Client({commandPrefix: config.prefix});
+//Set up command categories
+client.registry
+  .registerGroups([
+    ["util", "utility and informational commands"],
+    ["moderation", "commands for moderation"]
+  ])
+  .registerDefaults()
+  .registerCommandsIn(path.join(__dirname, "commands"));
 
 //Log in to Discord
 client.login(config.token);
@@ -97,27 +66,6 @@ let cleanup = ( () => {
           .catch((err) => logger.error(err));
 });
 
-//Authorisation Check for Mod and up
-let authCheck = ( (message, rank, operation) => {
-  let userLevel = 99999;
-  for (var role of config.roles){
-    if (message.member.roles.has(role.id)) {
-      userLevel = role.rank;
-      break;
-    }
-  }
-  if (!(userLevel <= rank)){
-    if (operation) message.channel.send(`Sorry, you do not have permission to ${operation}`);
-    return false;
-  }
-  return true;
-});
-
-//Save the config file
-let saveConfig = ( () => {
-  fs.writeFile("./config.json", JSON.stringify(config,null,2), "utf8", (err) => {if (err) logger.error(err);});
-});
-
 //When the bot has logged in to Discord
 client.on("ready", () => {
   logger.info(`Bot Ready - ${module.exports.name} - ${module.exports.version}`);
@@ -128,25 +76,12 @@ client.on("ready", () => {
 
 //Handle messages
 client.on("message", (message) => {
-  if (!message.content.startsWith(config.prefix) || message.author.bot) return;
-
-  //Reject PMs and leave channel
-  if (message.channel.type != "text") {
-    message.channel.send("Sorry, this bot currently does not support direct messages");
-    message.channel.delete().catch((err) => logger.error(err));
-    return;
-  }
 
   let command = message.content.toLowerCase().split(" ")[0].slice(1);
 
   //Get info about bot
   if (command === "about"){
     message.channel.send(`Hi, I'm ${module.exports.name} ${module.exports.version}.\nI was created by ${module.exports.author.name} and can be found at ${module.exports.homepage} or on npm.`);
-  }
-
-  //Check privacy time
-  if (command === "privacy"){
-    message.channel.send(`Messages in this channel are removed after ${config.cleanupTime / 60000} minutes for privacy.`);
   }
 
   //Get Weekly Topic
@@ -176,22 +111,8 @@ client.on("message", (message) => {
       return;
     }
     config.topic = newtopic;
-    saveConfig();
+    saveConfig(config);
     message.channel.send(`Set topic to "${config.topic}"`).catch((err) => logger.error(err));
-  }
-
-  //Set time after which to delete old messages
-  if (command === "setcleanuptime"){
-    if (!authCheck(message, 2, "set the cleanup time")) return;
-    let timeout = +message.content.slice(message.content.indexOf(" ")+1);
-    if (isNaN(timeout) || timeout > 20000 || timeout < 1 || (timeout % 1 != 0)) {
-      message.channel.send(`Cannot set timeout to "${message.content.slice(message.content.indexOf(" ")+1)}"`);
-      return;
-    }
-    timeout *= 60000;
-    config.cleanupTime = timeout;
-    saveConfig();
-    message.channel.send(`Messages in this channel are removed after ${config.cleanupTime / 60000} minutes for privacy.`);
   }
 
   //---Owner Only Commands---
@@ -207,7 +128,7 @@ client.on("message", (message) => {
     logger.info(`Setting game to "${newGame}"`);
     config.game = newGame;
     client.user.setGame(newGame);
-    saveConfig();
+    saveConfig(config);
   }
 
 });
