@@ -4,11 +4,7 @@ A lightweight bot for a private discord server written in discord.js
 
 ## Commands ##
 ### Generally Available ###
-* about - Display information about the bot and the current version
-* privacy - Check how long messages will be deleted after
+* privacy - Check how long messages will be deleted after or if you are permitted change the period of time
 * topic - Check the current chat topic
-* nick - Set your own nickname
 ### Restricted by Server Role ###
 * settopic - Set the current chat topic
-* setcleanuptime - Set the time after which messages will be deleted
-* setgame - Set the game the bot will display itself as playing
