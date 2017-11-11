@@ -20,7 +20,7 @@ module.exports = class PrivacyCommand extends Command {
   }
 
   run(message, args) {
-    if (args.time && authCheck(message, 3, "set the privacy interval")) {
+    if (args.time && authCheck(message, 2, "set the privacy interval")) {
       if (args.time > 20000 || args.time < 1){
         message.channel.send("Cannot set privacy interval to " + args.time);
         return;

@@ -22,7 +22,7 @@ module.exports = class WikiCommand extends Command {
   }
 
   run(message, args) {
-    if (!authCheck(message, 1, "set the topic")) return;
+    if (!authCheck(message, 2, "set the topic")) return;
     config.topic = args.topic;
     saveConfig(config);
     message.channel.send(`Set topic to "${config.topic}"`).catch((err) => logger.error(err));

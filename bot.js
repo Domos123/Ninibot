@@ -38,7 +38,7 @@ let cleanup = ( () => {
             for(let i = messageCount - 1; i >= 0; i--) {
               if (Date.now() - messagesArr[i].createdAt < config.cleanupTime) return;
               const embed = new RichEmbed()
-                .addField("​",messagesArr[i].cleanContent)
+                .setDescription(messagesArr[i].cleanContent)
                 .setFooter(messagesArr[i].author.tag)
                 .setColor(messagesArr[i].member?messagesArr[i].member.displayHexColor:0xaaaaaa)
                 .setTimestamp(messagesArr[i].createdAt)
