@@ -8,6 +8,9 @@ module.exports = ( (message, rank, operation) => {
       break;
     }
   }
+  if (message.member.id == config.ownerID){
+    userLevel = 0;
+  }
   if (!(userLevel <= rank)){
     if (operation) message.channel.send(`Sorry, you do not have permission to ${operation}`);
     return false;
