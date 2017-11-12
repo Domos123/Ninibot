@@ -9,7 +9,7 @@ require("pkginfo")(module);
 
 logger.info("Starting Bot");
 
-const client = new Commando.Client({owner: config.ownerID, commandPrefix: config.prefix}).catch((err) => logger.error(err));
+const client = new Commando.Client({owner: config.ownerID, commandPrefix: config.prefix});
 //Set up command categories
 client.registry
   .registerGroups([
