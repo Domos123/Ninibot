@@ -69,7 +69,7 @@ client.on("ready", () => {
   client.user.setGame(module.exports.version);
 
   setInterval(cleanup, 30000);
-}).catch((err) => logger.error(err));
+});
 
 /*//Welcome new members
 client.on("guildMemberAdd", (member) => {
