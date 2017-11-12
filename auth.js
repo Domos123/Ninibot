@@ -1,4 +1,4 @@
-const config = require("./config.js");
+const config = require("../../config.js");
 //Check authorisation to perform command
 module.exports = ( (message, rank, operation) => {
   let userLevel = 99999;
