@@ -9,7 +9,7 @@ require("pkginfo")(module);
 
 logger.info("Starting Bot");
 
-const client = new Commando.Client({owner: config.ownerID, commandPrefix: config.prefix});
+const client = new Commando.Client({owner: config.ownerID, commandPrefix: config.prefix}).catch((err) => logger.error(err));
 //Set up command categories
 client.registry
   .registerGroups([
@@ -20,7 +20,7 @@ client.registry
   .registerCommandsIn(path.join(__dirname, "commands"));
 
 //Log in to Discord
-client.login(config.token);
+client.login(config.token).catch((err) => logger.error(err));
 
 //Delete old messages
 let cleanup = ( () => {
@@ -69,12 +69,12 @@ client.on("ready", () => {
   client.user.setGame(module.exports.version);
 
   setInterval(cleanup, 30000);
-});
+}).catch((err) => logger.error(err));
 
-//Welcome new members
+/*//Welcome new members
 client.on("guildMemberAdd", (member) => {
   logger.info(`New User ${member.user.username} has joined ${member.guild.name}` );
   member.guild.defaultChannel.send(`Welcome ${member.displayName} to ${member.guild.name}!`);
   member.guild.defaultChannel.send("Message a moderator or admin to get permission to talk");
   member.guild.defaultChannel.send(`Messages in this channel are removed after ${config.cleanupTime / 60000} minutes for privacy.`);
-});
+}).catch((err) => logger.error(err));*/
