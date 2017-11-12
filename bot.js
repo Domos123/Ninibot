@@ -37,18 +37,8 @@ let cleanup = ( () => {
 
             for(let i = messageCount - 1; i >= 0; i--) {
               if (Date.now() - messagesArr[i].createdAt < config.cleanupTime) return;
-              let textWords = messagesArr[i].cleanContent.split(" ");
-              let choppedText = [];
-              for (let i=0; i<textWords.length; i++){
-                if (textWords[i].length > 100){
-                  choppedText = choppedText.concat(textWords[i].match(/[\s\S]{1,100}/g) || []);
-                } else {
-                  choppedText.push(textWords[i]);
-                }
-              }
-
               const embed = new RichEmbed()
-                .setDescription(choppedText.join[" "])
+                .setDescription(messagesArr[i].cleanContent)
                 .setFooter(messagesArr[i].author.tag)
                 .setColor(messagesArr[i].member?messagesArr[i].member.displayHexColor:0xaaaaaa)
                 .setTimestamp(messagesArr[i].createdAt)
