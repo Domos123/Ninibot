@@ -1,3 +1,4 @@
+const { Command } = require("discord.js-commando");
 const authCheck = require("../../auth.js");
 const logger = require("../../logger.js");
 
