@@ -14,8 +14,8 @@ module.exports = ( (message, rank, operation) => {
   }
   if (!(userLevel <= rank)){
     if (operation) message.channel.send(`Sorry, you do not have permission to ${operation}`);
+    logger.trace(`${message.member.displayName} is level ${userLevel}, ${operation} requires ${rank}, not performing ${operation}`);
     return false;
-    logger.log(`${message.member.displayName} is level ${userLevel}, ${operation} requires ${rank}`);
   }
   return true;
 });

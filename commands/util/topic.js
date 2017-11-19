@@ -1,7 +1,7 @@
 const { Command } = require("discord.js-commando");
 const config = require("../../config.js");
 const logger = require("../../logger.js");
-module.exports = class PrivacyCommand extends Command {
+module.exports = class TopicCommand extends Command {
   constructor(client) {
     super(client, {
       name: "topic",

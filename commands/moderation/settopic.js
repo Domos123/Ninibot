@@ -4,7 +4,7 @@ const authCheck = require("../../auth.js");
 const saveConfig = require("../../saveConfig.js");
 const logger = require("../../logger.js");
 
-module.exports = class WikiCommand extends Command {
+module.exports = class SetTopicCommand extends Command {
   constructor(client) {
     super(client, {
       name: "settopic",
@@ -25,6 +25,7 @@ module.exports = class WikiCommand extends Command {
     if (!authCheck(message, 2, "set the topic")) return;
     config.topic = args.topic;
     saveConfig(config);
+    logger.info(`${message.author.tag} set the topic to "${config.topic}"`);
     message.channel.send(`Set topic to "${config.topic}"`).catch((err) => logger.error(err));
   }
 

@@ -1,6 +1,5 @@
 const fs = require("fs");
 const logger = require("./logger.js");
-const saveConfig = require("./saveConfig.js");
 //Config in case none is present
 let initConfig = ( () => {
   config = {
@@ -17,8 +16,8 @@ let initConfig = ( () => {
     ],
     topic: "No topic set"};
   //Have to syncronous write so we don't quit before we save
-  saveConfig(config);
-  logger.info("Config was not found or malformed. Set up default config. Please configure then restart");
+  fs.writeFile("./config.json", JSON.stringify(config,null,2), "utf8", (err) => {if (err) logger.error(err);});
+  logger.warn("Config was not found or malformed. Set up default config. Please configure then restart");
   process.exit(1);
 });
 
