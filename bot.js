@@ -61,14 +61,14 @@ let cleanup = ( () => {
             }
           })
           .catch((err) => logger.error(err));
+  setTimeout(cleanup, 30000);
 });
 
 //When the bot has logged in to Discord
 client.on("ready", () => {
   logger.info(`Bot Ready - ${module.exports.name} - ${module.exports.version}`);
   client.user.setGame(module.exports.version);
-
-  setInterval(cleanup, 30000);
+  setTimeout(cleanup, 30000);
 });
 
 /*//Welcome new members
