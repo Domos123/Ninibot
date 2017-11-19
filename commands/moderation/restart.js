@@ -14,9 +14,10 @@ module.exports = class RestartCommand extends Command {
 
   run(message, args) {
     if (!authCheck(message, 2, "restart me")) return;
-    message.channel.send("I'm restarting, be right back!").catch((err) => logger.error(err));
     logger.warn(`Bot restarting on command from ${message.author.tag}`);
-    process.exit(-1);
+    message.channel.send("I'm restarting, be right back!")
+    .then(process.exit(-1))
+    .catch((err) => logger.error(err));
   }
 
 
