@@ -5,7 +5,7 @@ log4js.configure({
   appenders: {
     out: { type: "console", layout: {
       type: "pattern",
-      pattern: "%[%d{yyyy/MM/dd-hh:mm:ss} [%p]%] %m"
+      pattern: "%[[%p]%] %m"
     } }
   },
   categories: {
