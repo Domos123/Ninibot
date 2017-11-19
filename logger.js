@@ -9,7 +9,7 @@ log4js.configure({
     } }
   },
   categories: {
-    default: { appenders: "out", level: "trace" }
+    default: { appenders: ["out"], level: "trace" }
   }
 });
 
