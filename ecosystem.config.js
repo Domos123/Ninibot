@@ -7,7 +7,7 @@ module.exports = {
       exec_mode       : "cluster",
       watch           : false,
       node_args       : "--harmony",
-      log_date_format : “YYYY-MM-DD HH:mm Z”,
+      log_date_format : "YYYY-MM-DD HH:mm",
       autorestart     : true,
       restart_delay   : 4000
     },
