@@ -14,9 +14,10 @@ let initConfig = ( () => {
       {id: "second role id here", rank: 1},
       {id: "third role id here", rank: 2}
     ],
-    topic: "No topic set"};
+    topic: "No topic set",
+    lastMessageAt: 0};
   //Have to syncronous write so we don't quit before we save
-  fs.writeFile("./config.json", JSON.stringify(config,null,2), "utf8", (err) => {if (err) logger.error(err);});
+  fs.writeFileSync("./config.json", JSON.stringify(config,null,2), "utf8", (err) => {if (err) logger.error(err);});
   logger.warn("Config was not found or malformed. Set up default config. Please configure then restart");
   process.exit(1);
 });
