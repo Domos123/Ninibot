@@ -61,21 +61,25 @@ let cleanup = ( () => {
               let dT = Date.now() - lastMessageAt;
 
               let ago = Math.round(dT/60000);
-              let noun = "minutes";
+              let noun = "minute";
 
               if (ago > 60){
                 ago = Math.round(ago / 60);
-                noun = "hours";
+                noun = "hour";
 
                 if (ago > 24){
                   ago = Math.round(ago / 24);
-                  noun = "days";
+                  noun = "day";
 
                   if (ago > 7){
                     ago = Math.round(ago / 7);
-                    noun = "weeks";
+                    noun = "week";
                   }
                 }
+              }
+
+              if (ago > 1){
+                noun += "s";
               }
 
               mainchat.send(`Last message was sent ${ago} ${noun} ago.`);
