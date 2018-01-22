@@ -26,7 +26,7 @@ module.exports = class SetTopicCommand extends Command {
     config.topic = args.topic;
     saveConfig(config);
     logger.info(`${message.author.tag} set the topic to "${config.topic}"`);
-    message.channel.send(`Set topic to "${config.topic}"`).catch((err) => logger.error(err));
+    message.channel.send(`Set topic to "${config.topic}"`).catch((err) => logger.error(`Error sending message: ${err.name} - ${err.message}`));
   }
 
 

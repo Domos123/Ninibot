@@ -21,7 +21,7 @@ client.registry
   .registerCommandsIn(path.join(__dirname, "commands"));
 
 //Log in to Discord
-client.login(config.token).catch((err) => logger.error(err));
+client.login(config.token).catch((err) => logger.error(`Error logging in: ${err.name} - ${err.message}`));
 
 //Delete old messages
 let cleanup = ( () => {
@@ -59,12 +59,13 @@ let cleanup = ( () => {
                 .setColor(messagesArr[i].member?messagesArr[i].member.displayHexColor:0xaaaaaa)
                 .setTimestamp(messagesArr[i].createdAt)
                 .setAuthor(messagesArr[i].member?messagesArr[i].member.displayName:messagesArr[i].author.username, messagesArr[i].author.avatarURL);
-              backuproom.send({embed}).catch( (err) => logger.error(err));
+              backuproom.send({embed}).catch( (err) => logger.error(`Error backing up message: ${err.name} - ${err.message}`));
 
               //Store timestamp of deleted message
               config.lastMessageAt = messagesArr[i].createdTimestamp;
-              messagesArr[i].delete().catch( (err) => logger.error(err));
 
+              //Delete message
+              messagesArr[i].delete().catch( (err) => logger.error(`Error deleting message: ${err.name} - ${err.message}`));
               messagesDeleted+=1;
             }
             //Store last deleted message timestamp

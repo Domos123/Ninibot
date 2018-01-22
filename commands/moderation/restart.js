@@ -17,7 +17,7 @@ module.exports = class RestartCommand extends Command {
     logger.warn(`Bot restarting on command from ${message.author.tag}`);
     message.channel.send("I'm restarting, be right back!")
     .then(process.exit(-1))
-    .catch((err) => logger.error(err));
+    .catch((err) => logger.error(`Error restarting: ${err.name} - ${err.message}`));
   }
 
 

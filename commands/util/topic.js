@@ -12,6 +12,6 @@ module.exports = class TopicCommand extends Command {
   }
 
   run(message) {
-    message.channel.send(config.topic).catch((err) => logger.error(err));
+    message.channel.send(config.topic).catch((err) => logger.error(`Error fetching topic: ${err.name} - ${err.message}`));
   }
 };
