@@ -34,13 +34,25 @@ let cleanup = ( () => {
             let messageCount = messagesArr.length;
 
             let messagesDeleted = 0;
+            let emptyChannelMessage = null;
             for(let i = messageCount - 1; i >= 0; i--) {
-              if (Date.now() - messagesArr[i].createdAt < config.cleanupTime) return;
-              if (messagesArr[i].author.id === client.user.id && /^Last message was sent/.test(messagesArr[i].cleanContent)){
-                messagesArr[i].delete().catch( (err) => logger.error(err));
-                messagesDeleted+=1;
+
+              //Find empty channel message
+              if (messagesArr[i].author.id === client.user.id && /^There's nobody around right now, but I saw someone about/.test(messagesArr[i].cleanContent)){
+                emptyChannelMessage = messagesArr[i];
                 continue;
               }
+
+              //If there are more messages, delete the empty channel message
+              if (emptyChannelMessage != null){
+                emptyChannelMessage.delete().catch( (err) => logger.error(`Error deleting empty channel message: ${err.name} - ${err.message}`));
+                messagesDeleted+=1;
+              }
+
+              //Message is too new to delete
+              if (Date.now() - messagesArr[i].createdAt < config.cleanupTime) return;
+
+              //Back up message as embed
               const embed = new RichEmbed()
                 .setDescription(messagesArr[i].cleanContent)
                 .setFooter(messagesArr[i].author.tag)
@@ -48,11 +60,14 @@ let cleanup = ( () => {
                 .setTimestamp(messagesArr[i].createdAt)
                 .setAuthor(messagesArr[i].member?messagesArr[i].member.displayName:messagesArr[i].author.username, messagesArr[i].author.avatarURL);
               backuproom.send({embed}).catch( (err) => logger.error(err));
+
+              //Store timestamp of deleted message
               config.lastMessageAt = messagesArr[i].createdTimestamp;
               messagesArr[i].delete().catch( (err) => logger.error(err));
+
               messagesDeleted+=1;
             }
-
+            //Store last deleted message timestamp
             saveConfig(config);
 
             //"Last message was time ago"
@@ -82,7 +97,7 @@ let cleanup = ( () => {
                 noun += "s";
               }
 
-              mainchat.send(`Last message was sent ${ago} ${noun} ago.`);
+              mainchat.send(`There's nobody around right now, but I saw someone about ${ago} ${noun} before this message.`);
             }
           }).catch((err) => logger.error(err));
   setTimeout(cleanup, 30000);
